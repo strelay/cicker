@@ -11,6 +11,6 @@ public class StartGameBtn : TextureButton
 
     public void StartGame()
     {
-        GD.Print("Start btn clicked");
+        this.GetTree().ChangeScene("res://Scenes/Game.tscn");
     }
 }
