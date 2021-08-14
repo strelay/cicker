@@ -21,8 +21,8 @@ public class Game : Node2D
 
 	public void OnSpawnTimerTimeout()
 	{
-		var randX = GD.Randf() * 950f;
-		var randY = GD.Randf() * 550f;
+		var randX = GD.Randf() * 850f + 80;
+		var randY = GD.Randf() * 460f + 70;
 
 		HitCircleType circleType = HitCircleType.Normal;
 		PackedScene circleScene = null;
@@ -152,6 +152,11 @@ public class Game : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(float delta)
 	{
-
+		if (combo > 0 && spawnTime > 0.3f)
+		{
+			spawnTime = 1f - (combo / 250f);
+			spawnTimer.WaitTime = spawnTime;
+			GD.Print(spawnTime);
+		}
 	}
 }
