@@ -8,9 +8,9 @@ public class ConfigSystem : Node
     public override void _Ready()
     {
         bool isDesktop =
-			(OS.GetName() == "Windows") ||
-			(OS.GetName() == "X11") ||
-			(OS.GetName() == "OSX");
+        (OS.GetName() == "Windows") ||
+        (OS.GetName() == "X11") ||
+        (OS.GetName() == "OSX");
         
         cfgPath = isDesktop ? "res://gameconfig.cfg" : "user://gameconfig.cfg";
         cfgFile.Load(cfgPath);

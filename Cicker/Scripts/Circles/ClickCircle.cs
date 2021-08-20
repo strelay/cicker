@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public class ClickCircle : Area2D
 {
