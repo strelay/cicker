@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/DragHitCircleSFX.mp3-b0129475c4afbc3db8a639e2150e324f.mp3str"
+
+[deps]
+
+source_file="res://Resources/SFX/DragHitCircleSFX.mp3"
+dest_files=[ "res://.import/DragHitCircleSFX.mp3-b0129475c4afbc3db8a639e2150e324f.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

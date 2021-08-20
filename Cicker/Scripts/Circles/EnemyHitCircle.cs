@@ -2,7 +2,7 @@ using Godot;
 
 public class EnemyHitCircle : Node2D
 {
-    [Signal] public delegate void on_destroy();
+    [Signal] public delegate void on_destroy(HitCircleType circleType);
     public HitCircleType circleType;
     private Area2D collision;
 
@@ -14,7 +14,7 @@ public class EnemyHitCircle : Node2D
 
     public void Destroy()
     {
-        EmitSignal("on_destroy");
+        EmitSignal("on_destroy", circleType);
         this.QueueFree();
     }
 }

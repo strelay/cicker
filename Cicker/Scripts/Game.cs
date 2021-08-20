@@ -14,11 +14,12 @@ public class Game : Node2D
 	private List<Node2D> circles = new List<Node2D>();
 	private bool isGameOver = false;
 	private bool isGamePaused = false;
-
+	private AudioManager audioManager;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		audioManager = GetNode<AudioManager>("AudioManager");
 		restartButton = GetNode<TextureButton>("CanvasLayer/RestartButton");
 		pauseButton = GetNode<TextureButton>("CanvasLayer/PauseButton");
 		pauseButton.Connect("pressed", this, "PauseGame");
@@ -43,11 +44,11 @@ public class Game : Node2D
 			case 0:
 				circleType = HitCircleType.Normal;
 				circleScene = GD.Load<PackedScene>("res://Scenes/Circles/NormalCircle.tscn");
-				break;
+			break;
 			case 1:
 				circleType = HitCircleType.Drag;
 				circleScene = GD.Load<PackedScene>("res://Scenes/Circles/DragCircle.tscn");
-				break;
+			break;
 		}
 		var circle = (Node2D)circleScene.Instance();
 		(circle as EnemyHitCircle).circleType = circleType;
@@ -149,10 +150,11 @@ public class Game : Node2D
 		}
 	}
 
-	public void OnHitCircleDestroyed()
+	public void OnHitCircleDestroyed(HitCircleType circleType)
 	{
 		combo++;
 		comboLabel.Text = combo.ToString();
+		audioManager.PlayHitCircleSFX(circleType);
 	}
 
 	public void GameOver()

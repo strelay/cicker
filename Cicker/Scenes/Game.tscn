@@ -1,8 +1,11 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/StartGameBtn.cs" type="Script" id=2]
 [ext_resource path="res://Resources/Sprites/pause.png" type="Texture" id=3]
+[ext_resource path="res://Resources/SFX/DragHitCircleSFX.mp3" type="AudioStream" id=4]
+[ext_resource path="res://Resources/SFX/NormalHitCircleSFX.mp3" type="AudioStream" id=5]
+[ext_resource path="res://Scripts/AudioManager.cs" type="Script" id=6]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -95,3 +98,16 @@ __meta__ = {
 }
 
 [node name="SpawnTimer" type="Timer" parent="."]
+
+[node name="AudioManager" type="Node" parent="."]
+script = ExtResource( 6 )
+
+[node name="SFX" type="Node" parent="AudioManager"]
+
+[node name="NormalHitCircleSFX" type="AudioStreamPlayer" parent="AudioManager/SFX"]
+stream = ExtResource( 5 )
+volume_db = -2.0
+
+[node name="DragHitCircleSFX" type="AudioStreamPlayer" parent="AudioManager/SFX"]
+stream = ExtResource( 4 )
+volume_db = -4.0
