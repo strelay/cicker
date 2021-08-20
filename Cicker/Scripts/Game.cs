@@ -15,10 +15,12 @@ public class Game : Node2D
 	private bool isGameOver = false;
 	private bool isGamePaused = false;
 	private AudioManager audioManager;
+	private ConfigSystem configSystem;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		configSystem = GetNode<ConfigSystem>("/root/ConfigSystem");
 		audioManager = GetNode<AudioManager>("AudioManager");
 		restartButton = GetNode<TextureButton>("CanvasLayer/RestartButton");
 		pauseButton = GetNode<TextureButton>("CanvasLayer/PauseButton");
@@ -152,8 +154,14 @@ public class Game : Node2D
 
 	public void OnHitCircleDestroyed(HitCircleType circleType)
 	{
+		string currentHighScore = configSystem.LoadValue("Scores", "HighScore");
+		string highScoreStr = "";
+		if (currentHighScore.IsValidInteger())
+		{
+			highScoreStr = "/" + currentHighScore;
+		}
 		combo++;
-		comboLabel.Text = combo.ToString();
+		comboLabel.Text = combo.ToString() + highScoreStr;
 		audioManager.PlayHitCircleSFX(circleType);
 	}
 
@@ -167,6 +175,13 @@ public class Game : Node2D
 		pauseButton.Visible = false;
 		gameOverUIContainer.Visible = true;
 		restartButton.Disabled = false;
+		
+		string currentHighScore = configSystem.LoadValue("Scores", "HighScore");
+		if ((currentHighScore.IsValidInteger() && int.Parse(currentHighScore) < combo) 
+			|| currentHighScore == "")
+		{
+			configSystem.SaveValue("Scores", "HighScore", combo.ToString());
+		}
 	}
 
 	public void PauseGame()
