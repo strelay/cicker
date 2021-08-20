@@ -1,26 +1,97 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
+[ext_resource path="res://Scripts/StartGameBtn.cs" type="Script" id=2]
+[ext_resource path="res://Resources/Sprites/pause.png" type="Texture" id=3]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 1 )
 
-[node name="UIContainer" type="PanelContainer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 120
+
+[node name="GameOverUIContainer" type="VBoxContainer" parent="CanvasLayer"]
+visible = false
 margin_right = 1024.0
-margin_bottom = 32.0
+margin_bottom = 600.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="CanvasLayer/GameOverUIContainer"]
+margin_right = 1024.0
+margin_bottom = 298.0
+size_flags_vertical = 7
+text = "Game Over!"
+align = 1
+valign = 1
+
+[node name="PressAnywhereLabel" type="Label" parent="CanvasLayer/GameOverUIContainer"]
+margin_top = 302.0
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_vertical = 3
+text = "Press anywhere to restart"
+align = 1
+valign = 1
+uppercase = true
+
+[node name="UIContainer" type="PanelContainer" parent="CanvasLayer"]
+margin_top = 16.0
+margin_right = 1024.0
+margin_bottom = 600.0
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ComboLabel" type="Label" parent="UIContainer"]
-margin_top = 9.0
+[node name="ComboLabel" type="Label" parent="CanvasLayer/UIContainer"]
 margin_right = 1024.0
-margin_bottom = 23.0
+margin_bottom = 584.0
+size_flags_vertical = 1
 text = "0"
 align = 1
+
+[node name="PauseUIContainer" type="VBoxContainer" parent="CanvasLayer"]
+visible = false
+margin_right = 1024.0
+margin_bottom = 600.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="CanvasLayer/PauseUIContainer"]
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_vertical = 7
+text = "Paused!"
+align = 1
 valign = 1
+
+[node name="RestartButton" type="TextureButton" parent="CanvasLayer"]
+margin_right = 1024.0
+margin_bottom = 600.0
+disabled = true
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PauseButton" type="TextureButton" parent="CanvasLayer"]
+margin_left = 980.0
+margin_top = 8.0
+margin_right = 1236.0
+margin_bottom = 264.0
+grow_horizontal = 0
+rect_scale = Vector2( 0.15, 0.15 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_description_": ""
+}
 
 [node name="SpawnTimer" type="Timer" parent="."]

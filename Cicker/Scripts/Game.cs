@@ -7,13 +7,24 @@ public class Game : Node2D
 	private Timer spawnTimer;
 	private Label comboLabel;
 	private int combo = 0;
+	private VBoxContainer gameOverUIContainer;
+	private VBoxContainer pauseUIContainer;
+	private TextureButton restartButton;
+	private TextureButton pauseButton;
 	private List<Node2D> circles = new List<Node2D>();
+	private bool isGameOver = false;
+	private bool isGamePaused = false;
 
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		comboLabel = GetNode<Label>("UIContainer/ComboLabel");
+		restartButton = GetNode<TextureButton>("CanvasLayer/RestartButton");
+		pauseButton = GetNode<TextureButton>("CanvasLayer/PauseButton");
+		pauseButton.Connect("pressed", this, "PauseGame");
+		gameOverUIContainer = GetNode<VBoxContainer>("CanvasLayer/GameOverUIContainer");
+		pauseUIContainer = GetNode<VBoxContainer>("CanvasLayer/PauseUIContainer");
+		comboLabel = GetNode<Label>("CanvasLayer/UIContainer/ComboLabel");
 		spawnTimer = GetNode<Timer>("SpawnTimer");
 		spawnTimer.Connect("timeout", this, "OnSpawnTimerTimeout");
 		spawnTimer.Start(spawnTime);
@@ -49,37 +60,40 @@ public class Game : Node2D
 
 	public override void _Input(InputEvent @event)
 	{
-		bool isDesktop =
-		(OS.GetName() == "Windows") ||
-		(OS.GetName() == "X11") ||
-		(OS.GetName() == "OSX");
-
-		if (isDesktop)
+		if (!isGameOver || isGamePaused)
 		{
-			if (@event is InputEventMouseButton eventbtn && @event.IsPressed())
-			{
-				HandleCollisions(eventbtn.Position);
-			}
+			bool isDesktop =
+			(OS.GetName() == "Windows") ||
+			(OS.GetName() == "X11") ||
+			(OS.GetName() == "OSX");
 
-			if (@event is InputEventMouseMotion dragEvent)
+			if (isDesktop)
 			{
-				if (dragEvent.Pressure > 0.5)
+				if (@event is InputEventMouseButton eventbtn && @event.IsPressed())
+				{
+					HandleCollisions(eventbtn.Position);
+				}
+
+				if (@event is InputEventMouseMotion dragEvent)
+				{
+					if (dragEvent.Pressure > 0.5)
+					{
+						HandleCollisions(dragEvent.Position, dragEvent.Speed, true);
+					}
+				}
+			}
+			else
+			{
+				if (@event is InputEventScreenTouch eventScreenTouch && @event.IsPressed())
+				{
+					var globalTouchPosition = GetCanvasTransform().AffineInverse().XformInv(eventScreenTouch.Position);
+					HandleCollisions(globalTouchPosition);
+				}
+
+				if (@event is InputEventScreenDrag dragEvent)
 				{
 					HandleCollisions(dragEvent.Position, dragEvent.Speed, true);
 				}
-			}
-		}
-		else
-		{
-			if (@event is InputEventScreenTouch eventScreenTouch && @event.IsPressed())
-			{
-				var globalTouchPosition = GetCanvasTransform().AffineInverse().XformInv(eventScreenTouch.Position);
-				HandleCollisions(globalTouchPosition);
-			}
-
-			if (@event is InputEventScreenDrag dragEvent)
-			{
-				HandleCollisions(dragEvent.Position, dragEvent.Speed, true);
 			}
 		}
 	}
@@ -120,14 +134,14 @@ public class Game : Node2D
 	{
 		var circle = circles[circleIndex];
 		var circleScript = circle as EnemyHitCircle;
-        int speedThreshold = 20;
+		int speedThreshold = 20;
 		if (circleScript.circleType == HitCircleType.Drag)
 		{
 			var circleCollissionShape = circle.GetNode<CollisionShape2D>("EnemyCircleArea2D/CollisionShape2D");
 			var circleHitbox = new Rect2(circleCollissionShape.GlobalPosition, circleCollissionShape.GlobalScale);
 			var clickHitbox = new Rect2(clickPosition.x - 50, clickPosition.y - 50, 100, 100);
-			if (circleHitbox.Intersects(clickHitbox) && 
-                (Mathf.Abs(speed.x) > speedThreshold || Mathf.Abs(speed.y) > speedThreshold))
+			if (circleHitbox.Intersects(clickHitbox) &&
+				(Mathf.Abs(speed.x) > speedThreshold || Mathf.Abs(speed.y) > speedThreshold))
 			{
 				circleScript.Destroy();
 				circles.RemoveAt(circleIndex);
@@ -135,18 +149,29 @@ public class Game : Node2D
 		}
 	}
 
-	public void SpawnClickCircle(Vector2 position)
-	{
-		var clickCircleScene = GD.Load<PackedScene>("res://Scenes/Circles/ClickCircle.tscn");
-		var clickCircle = (Area2D)clickCircleScene.Instance();
-		clickCircle.GlobalPosition = position;
-		AddChild(clickCircle);
-	}
-
 	public void OnHitCircleDestroyed()
 	{
 		combo++;
 		comboLabel.Text = combo.ToString();
+	}
+
+	public void GameOver()
+	{
+		isGameOver = true;
+		spawnTimer.Stop();
+
+		comboLabel.Visible = false;
+		pauseButton.Disabled = true;
+		pauseButton.Visible = false;
+		gameOverUIContainer.Visible = true;
+		restartButton.Disabled = false;
+	}
+
+	public void PauseGame()
+	{
+		isGamePaused = !isGamePaused;
+		spawnTimer.Paused = isGamePaused;
+		pauseUIContainer.Visible = isGamePaused;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -156,7 +181,11 @@ public class Game : Node2D
 		{
 			spawnTime = 1f - (combo / 250f);
 			spawnTimer.WaitTime = spawnTime;
-			GD.Print(spawnTime);
+		}
+
+		if (circles.Count > 5)
+		{
+			GameOver();
 		}
 	}
 }
