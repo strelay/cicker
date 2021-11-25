@@ -1,5 +1,5 @@
 public enum HitCircleType
 {
-	Normal = 0,
-	Drag = 1
+    Normal = 0,
+    Drag = 1
 }
