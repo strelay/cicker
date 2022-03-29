@@ -63,7 +63,7 @@ public class Game : Node2D
 
     public override void _Input(InputEvent @event)
     {
-        if (!isGameOver || isGamePaused)
+        if (!isGameOver && !isGamePaused)
         {
             bool isDesktop =
             (OS.GetName() == "Windows") ||
@@ -89,7 +89,7 @@ public class Game : Node2D
             {
                 if (@event is InputEventScreenTouch eventScreenTouch && @event.IsPressed())
                 {
-                    var globalTouchPosition = GetCanvasTransform().AffineInverse().XformInv(eventScreenTouch.Position);
+                    var globalTouchPosition = GetCanvasTransform().AffineInverse() * eventScreenTouch.Position;
                     HandleCollisions(globalTouchPosition);
                 }
 
@@ -137,7 +137,7 @@ public class Game : Node2D
     {
         var circle = circles[circleIndex];
         var circleScript = circle as EnemyHitCircle;
-        int speedThreshold = 20;
+        int speedThreshold = 200;
         if (circleScript.circleType == HitCircleType.Drag)
         {
             var circleCollissionShape = circle.GetNode<CollisionShape2D>("EnemyCircleArea2D/CollisionShape2D");
